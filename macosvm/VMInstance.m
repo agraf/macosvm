@@ -559,7 +559,7 @@ void add_unlink_on_exit(const char *fn); /* from main.m - a bit hacky but more s
 }
 
 - (void) start_ {
-    [_virtualMachine _startWithOptions:self.options completionHandler:^(NSError *err) {
+    [_virtualMachine startWithOptions:self.options completionHandler:^(NSError *err) {
         NSLog(@"start completed err=%@", err ? err : @"nil");
         if (err)
             @throw [NSException exceptionWithName:@"VMStartError" reason:[err description] userInfo:nil];
