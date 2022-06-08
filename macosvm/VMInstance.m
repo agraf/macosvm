@@ -468,6 +468,15 @@ void add_unlink_on_exit(const char *fn); /* from main.m - a bit hacky but more s
                 } else
                     NSLog(@"WARNING: auxiliary storage is only supported for macOS guests, ignoring\n");
             }
+            if ([tmp isEqualToString:@"usb"]) {
+                NSError *err = nil;
+                NSURL *imageURL = url ? url : [NSURL fileURLWithPath:path];
+                NSLog(@" + usb image %@ (%@)", imageURL, ro ? @"read-only" : @"read-write");
+                VZDiskImageStorageDeviceAttachment *a = [[VZDiskImageStorageDeviceAttachment alloc] initWithURL:imageURL readOnly:ro error:&err];
+                if (err)
+                    @throw [NSException exceptionWithName:@"VMConfigDiskStorageError" reason:[err description] userInfo:nil];
+                [std addObject:[[VZUSBMassStorageDeviceConfiguration alloc] initWithAttachment:a]];
+            }
         }
     }
     self.storageDevices = std;
