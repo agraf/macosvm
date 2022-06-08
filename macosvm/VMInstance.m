@@ -535,9 +535,9 @@ void add_unlink_on_exit(const char *fn); /* from main.m - a bit hacky but more s
     //queue = dispatch_get_main_queue(); //dispatch_queue_create("macvm", DISPATCH_QUEUE_SERIAL);
     queue = dispatch_queue_create("macvm", DISPATCH_QUEUE_SERIAL);
     self.virtualMachine = [[VZVirtualMachine alloc] initWithConfiguration:_spec queue:queue];
-    self.options = [[_VZVirtualMachineStartOptions alloc] init];
-    self.options.bootMacOSRecovery = self.spec->recovery;
-    self.options.forceDFU = self.spec->dfu;
+    self.options = [[VZMacOSVirtualMachineStartOptions alloc] init];
+    self.options.startUpFromMacOSRecovery = self.spec->recovery;
+    //self.options.forceDFU = self.spec->dfu;
     NSLog(@" init OK");
     return self;
 }

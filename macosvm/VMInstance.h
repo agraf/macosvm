@@ -39,13 +39,14 @@
 
 @end
 
-@interface _VZVirtualMachineStartOptions : NSObject
+@interface MyVZVirtualMachineStartOptions : VZMacOSVirtualMachineStartOptions
 
 @property BOOL restartAction;
 @property BOOL panicAction;
 @property BOOL stopInIBootStage1;
 @property BOOL stopInIBootStage2;
 @property BOOL bootMacOSRecovery;
+@property BOOL startUpFromMacOSRecovery;
 @property BOOL forceDFU;
 
 @end
@@ -59,7 +60,7 @@
 
 @property (strong) VZVirtualMachine *virtualMachine;
 @property (strong) VMSpec *spec;
-@property (strong) _VZVirtualMachineStartOptions *options;
+@property (strong) MyVZVirtualMachineStartOptions *options;
 
 - (instancetype) initWithSpec: (VMSpec*) spec;
 - (void) start;
@@ -73,5 +74,5 @@
 @end
 
 @interface VZVirtualMachine()
-- (void)_startWithOptions:(_VZVirtualMachineStartOptions *_Nonnull)options completionHandler:(void (^_Nonnull)(NSError * _Nullable errorOrNil))completionHandler;
+- (void)_startWithOptions:(MyVZVirtualMachineStartOptions *_Nonnull)options completionHandler:(void (^_Nonnull)(NSError * _Nullable errorOrNil))completionHandler;
 @end
