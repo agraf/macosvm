@@ -517,6 +517,36 @@ void add_unlink_on_exit(const char *fn); /* from main.m - a bit hacky but more s
 
 @end
 
+ #import <objc/runtime.h>
+
+/**
+ *  Gets a list of all methods on a class (or metaclass)
+ *  and dumps some properties of each
+ *
+ *  @param clz the class or metaclass to investigate
+ */
+static void DumpObjcMethods(Class clz) {
+
+    unsigned int methodCount = 0;
+    Method *methods = class_copyMethodList(clz, &methodCount);
+
+    printf("Found %d methods on '%s'\n", methodCount, class_getName(clz));
+
+    for (unsigned int i = 0; i < methodCount; i++) {
+        Method method = methods[i];
+
+        printf("\t'%s' has method named '%s' of encoding '%s'\n",
+               class_getName(clz),
+               sel_getName(method_getName(method)),
+               method_getTypeEncoding(method));
+
+        /**
+         *  Or do whatever you need here...
+         */
+    }
+
+    free(methods);
+}
 
 @implementation VMInstance
 {
@@ -537,7 +567,10 @@ void add_unlink_on_exit(const char *fn); /* from main.m - a bit hacky but more s
     self.virtualMachine = [[VZVirtualMachine alloc] initWithConfiguration:_spec queue:queue];
     self.options = [[VZMacOSVirtualMachineStartOptions alloc] init];
     self.options.startUpFromMacOSRecovery = self.spec->recovery;
-    //self.options.forceDFU = self.spec->dfu;
+    [self.options _setForceDFU:self.spec->dfu];
+
+    DumpObjcMethods(object_getClass(self.options));
+
     NSLog(@" init OK");
     return self;
 }

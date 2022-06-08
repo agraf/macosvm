@@ -40,7 +40,7 @@
 @end
 
 #if 0
-@interface VZMacOSVirtualMachineStartOptions : VZVirtualMachineStartOptions
+@interface MyVZMacOSVirtualMachineStartOptions : VZMacOSVirtualMachineStartOptions
 
 @property BOOL restartAction;
 @property BOOL panicAction;
