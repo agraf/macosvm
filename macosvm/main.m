@@ -521,6 +521,7 @@ int main(int ac, char**av) {
                 if (!strcmp(av[i], "--no-pl011")) { spec->use_pl011 = NO; continue; }
                 if (!strcmp(av[i], "--recovery")) { spec->recovery = YES; continue; }
                 if (!strcmp(av[i], "--dfu")) { spec->dfu = YES; continue; }
+                if (!strcmp(av[i], "--gdb")) { spec->gdb = YES; continue; }
             }
         } else {
             if (configPath) {

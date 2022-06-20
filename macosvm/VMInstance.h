@@ -1,6 +1,13 @@
 #import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 
+@interface _VZGDBDebugStubConfiguration {
+}
+
+- (instancetype) initWithPort: (int)withPort;
+    @property BOOL listensOnAllNetworkInterfaces;
+@end
+
 @interface VMSpec : VZVirtualMachineConfiguration {
     NSData  *machineIdentifierData, *hardwareModelData;
     NSArray *storage;
@@ -20,7 +27,7 @@
 @public
     int cpus;
     unsigned long ram;
-    BOOL audio, use_serial, pty, use_pl011, recovery, dfu;
+    BOOL audio, use_serial, pty, use_pl011, recovery, dfu, gdb;
 }
 
 @property (strong) VZMacOSRestoreImage *restoreImage;
@@ -36,6 +43,7 @@
 - (void) addNetwork: (NSString*) type interface: (NSString*) iface;
 - (instancetype) configure;
 - (void) cloneAllStorage;
+- (void) _setDebugStub: (_VZGDBDebugStubConfiguration *)gdb;
 
 @end
 

@@ -5,6 +5,38 @@
 #include <unistd.h>
 #include <sys/errno.h>
 
+ #import <objc/runtime.h>
+
+/**
+ *  Gets a list of all methods on a class (or metaclass)
+ *  and dumps some properties of each
+ *
+ *  @param clz the class or metaclass to investigate
+ */
+static void DumpObjcMethods(Class clz) {
+
+    unsigned int methodCount = 0;
+    Method *methods = class_copyMethodList(clz, &methodCount);
+
+    printf("Found %d methods on '%s'\n", methodCount, class_getName(clz));
+
+    for (unsigned int i = 0; i < methodCount; i++) {
+        Method method = methods[i];
+
+        printf("\t'%s' has method named '%s' of encoding '%s'\n",
+               class_getName(clz),
+               sel_getName(method_getName(method)),
+               method_getTypeEncoding(method));
+
+        /**
+         *  Or do whatever you need here...
+         */
+    }
+
+    free(methods);
+}
+
+
 @implementation VMSpec
 
 - (instancetype) init {
@@ -18,6 +50,7 @@
     audio = NO;
     recovery = NO;
     dfu = NO;
+    gdb = NO;
     _restoreImage = nil;
     use_serial = YES;
     use_pl011 = NO;
@@ -507,6 +540,16 @@ void add_unlink_on_exit(const char *fn); /* from main.m - a bit hacky but more s
         self.platform = [[VZGenericPlatformConfiguration alloc] init];
     }
 
+    if (gdb) {
+        _VZGDBDebugStubConfiguration *gdbConfig;
+        gdbConfig = [_VZGDBDebugStubConfiguration alloc];
+        DumpObjcMethods(object_getClass(gdbConfig));
+        [gdbConfig initWithPort:5555];
+        gdbConfig.listensOnAllNetworkInterfaces = true;
+
+        [self _setDebugStub:gdbConfig];
+    }
+
     NSLog(@" + %d CPUs", (int) cpus);
     self.CPUCount = cpus;
     NSLog(@" + %lu RAM", ram);
@@ -516,37 +559,6 @@ void add_unlink_on_exit(const char *fn); /* from main.m - a bit hacky but more s
 }
 
 @end
-
- #import <objc/runtime.h>
-
-/**
- *  Gets a list of all methods on a class (or metaclass)
- *  and dumps some properties of each
- *
- *  @param clz the class or metaclass to investigate
- */
-static void DumpObjcMethods(Class clz) {
-
-    unsigned int methodCount = 0;
-    Method *methods = class_copyMethodList(clz, &methodCount);
-
-    printf("Found %d methods on '%s'\n", methodCount, class_getName(clz));
-
-    for (unsigned int i = 0; i < methodCount; i++) {
-        Method method = methods[i];
-
-        printf("\t'%s' has method named '%s' of encoding '%s'\n",
-               class_getName(clz),
-               sel_getName(method_getName(method)),
-               method_getTypeEncoding(method));
-
-        /**
-         *  Or do whatever you need here...
-         */
-    }
-
-    free(methods);
-}
 
 @implementation VMInstance
 {
@@ -570,6 +582,10 @@ static void DumpObjcMethods(Class clz) {
     [self.options _setForceDFU:self.spec->dfu];
 
     DumpObjcMethods(object_getClass(self.options));
+    DumpObjcMethods(object_getClass(self));
+    DumpObjcMethods(object_getClass(spec_));
+
+//    [self :self.spec->dfu];
 
     NSLog(@" init OK");
     return self;
